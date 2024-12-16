@@ -6,75 +6,163 @@ import { Container } from "react-bootstrap";
 
 const UserForm = () => {
   const [formData, setFormData] = useState({
-    name: "",
+    email: "",
     password: "",
     cpassword: "",
   });
-  const [showAlert, setShowAlert] = useState(false); // State for showing alert
+  const [errorState, setErrorState] = useState({
+    showAlert: false,
+    passwordMatchError: false,
+    apiError: null,
+  });
+  const [valid, setValid] = useState(false);
 
+  const formValid = () => {
+    if (formData.email && formData.password && formData.password) {
+      setValid(true);
+    } else {
+      setValid(false);
+    }
+  };
   // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+
+    // Validate password match while typing in "Confirm Password"
+    if (name === "cpassword") {
+      setErrorState((prevState) => ({
+        ...prevState,
+        passwordMatchError: value !== formData.password,
+      }));
+    }
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Final validation before submission
+    if (formData.password !== formData.cpassword) {
+      setErrorState((prevState) => ({
+        ...prevState,
+        passwordMatchError: true,
+      }));
+      return;
+    }
+
     console.log("Form Data Submitted: ", formData);
-    setShowAlert(true); // Show the alert
-    setTimeout(() => setShowAlert(false), 3000); // Hide the alert after 3 seconds
+    try {
+      const res = await fetch(
+        "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCUjLjnpRxGDfU1vWmhDafxL3sC22a-oms",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password,
+            returnSecureToken: true,
+          }),
+        }
+      );
+
+      if (!res.ok) {
+        const data = await res.json();
+        setErrorState({
+          showAlert: false,
+          passwordMatchError: false,
+          apiError: data.error.message,
+        });
+      } else {
+        setErrorState({
+          showAlert: true,
+          passwordMatchError: false,
+          apiError: null,
+        });
+        setTimeout(
+          () =>
+            setErrorState((prevState) => ({ ...prevState, showAlert: false })),
+          3000
+        );
+      }
+    } catch (error) {
+      console.error("Error submitting data: ", error);
+      alert("Failed to submit data. Please try again.");
+    }
   };
 
   return (
     <Container className="d-flex justify-content-center align-items-center flex-column mt-3">
-      {showAlert && (
+      {errorState.showAlert && (
         <Alert variant="success" className="w-50 text-center">
           Data submitted successfully!
         </Alert>
       )}
+      {errorState.apiError && (
+        <Alert variant="danger" className="w-50 text-center">
+          {errorState.apiError}
+        </Alert>
+      )}
+      {errorState.passwordMatchError && (
+        <Alert variant="danger" className="w-50 text-center">
+          Password and Confirm Password do not match.
+        </Alert>
+      )}
 
-      <Form
-        className="d-flex flex-column align-items-center w-50"
-        onSubmit={handleSubmit}
-      >
-        <Form.Group className="mb-3 w-100" controlId="formBasicName">
-          <Form.Label>Name</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter your name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-          />
-        </Form.Group>
+      <div className="card p-4 w-50 shadow">
+        <h3 className="text-center mb-4">User Form</h3>
+        <Form
+          className="d-flex flex-column align-items-center"
+          onSubmit={handleSubmit}
+        >
+          <Form.Group className="mb-3 w-100" controlId="formBasicEmail">
+            <Form.Label>Email</Form.Label>
+            <Form.Control
+              required
+              type="email"
+              placeholder="Enter your email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+            />
+          </Form.Group>
 
-        <Form.Group className="mb-3 w-100" controlId="formBasicEmail">
-          <Form.Label>Password</Form.Label>
-          <Form.Control
-            type="email"
-            placeholder="Enter your email"
-            name="email"
-            value={formData.password}
-            onChange={handleChange}
-          />
-        </Form.Group>
+          <Form.Group className="mb-3 w-100" controlId="formBasicPassword">
+            <Form.Label>Password</Form.Label>
+            <Form.Control
+              required
+              type="password"
+              placeholder="Password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+            />
+          </Form.Group>
 
-        <Form.Group className="mb-3 w-100" controlId="formBasicPhone">
-          <Form.Label>Confirm Password</Form.Label>
-          <Form.Control
-            type="number"
-            placeholder="Enter your phone number"
-            name="phone"
-            value={formData.cpassword}
-            onChange={handleChange}
-          />
-        </Form.Group>
+          <Form.Group className="mb-3 w-100" controlId="formBasicCPassword">
+            <Form.Label>Confirm Password</Form.Label>
+            <Form.Control
+              required
+              type="password"
+              placeholder="Confirm Password"
+              name="cpassword"
+              value={formData.cpassword}
+              onChange={handleChange}
+            />
+          </Form.Group>
 
-        <Button variant="primary" type="submit">
-          Submit
+          <Button variant="primary" type="submit" disabled={!valid}>
+            Sign Up
+          </Button>
+        </Form>
+      </div>
+      <div className="mt-5" style={{ width: "50rem" }}>
+        <Button variant="primary" type="button">
+          Have an Account? Login
         </Button>
-      </Form>
+      </div>
     </Container>
   );
 };
