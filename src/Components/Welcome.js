@@ -85,62 +85,75 @@ const WelcomeScreen = () => {
     navigate("/complete-profile");
   };
 
+  const history = useNavigate();
+  const onLogout = () => {
+    history("/");
+    localStorage.removeItem("token");
+  };
+
   return (
-    <div className="container mt-3">
-      <h3>Welcome to Expense Tracker</h3>
-
-      {/* Alert Messages */}
-      {message && (
-        <Alert variant="success" className="mt-3">
-          {message}
-        </Alert>
-      )}
-      {error && (
-        <Alert variant="danger" className="mt-3">
-          {error}
-        </Alert>
-      )}
-
-      {/* Email Verification Section */}
-      {!isVerified && (
-        <div className="mt-3">
-          <span>Your email is not verified. </span>
-          <Button
-            variant="link"
-            className="text-decoration-none"
-            onClick={sendVerificationEmail}
-          >
-            Verify Now
-          </Button>
+    <>
+      <div className="container mt-3">
+        <div style={{ display: "flex", gap: "4rem", justifyContent: "center" }}>
+          <h3>Welcome to Expense Tracker</h3>
+          <button className="mr-6" onClick={onLogout}>
+            Logout
+          </button>
         </div>
-      )}
 
-      {isVerified && (
-        <Alert variant="success" className="mt-3">
-          Your email is verified. Thank you!
-        </Alert>
-      )}
+        {/* Alert Messages */}
+        {message && (
+          <Alert variant="success" className="mt-3">
+            {message}
+          </Alert>
+        )}
+        {error && (
+          <Alert variant="danger" className="mt-3">
+            {error}
+          </Alert>
+        )}
 
-      {/* Complete Profile Section */}
-      {!profileComplete && (
-        <div className="mt-3">
-          <span>Your profile is incomplete. </span>
-          <Button
-            variant="link"
-            className="text-decoration-none"
-            onClick={navigateToCompleteProfile}
-          >
-            Complete Now
-          </Button>
-        </div>
-      )}
+        {/* Email Verification Section */}
+        {!isVerified && (
+          <div className="mt-3">
+            <span>Your email is not verified. </span>
+            <Button
+              variant="link"
+              className="text-decoration-none"
+              onClick={sendVerificationEmail}
+            >
+              Verify Now
+            </Button>
+          </div>
+        )}
 
-      {profileComplete && (
-        <Alert variant="success" className="mt-3">
-          Your profile is complete. Enjoy the platform!
-        </Alert>
-      )}
-    </div>
+        {isVerified && (
+          <Alert variant="success" className="mt-3">
+            Your email is verified. Thank you!
+          </Alert>
+        )}
+
+        {/* Complete Profile Section */}
+        {!profileComplete && (
+          <div className="mt-3">
+            <span>Your profile is incomplete. </span>
+            <Button
+              variant="link"
+              className="text-decoration-none"
+              onClick={navigateToCompleteProfile}
+            >
+              Complete Now
+            </Button>
+          </div>
+        )}
+
+        {profileComplete && (
+          <Alert variant="success" className="mt-3">
+            Your profile is complete. Enjoy the platform!
+          </Alert>
+        )}
+      </div>
+    </>
   );
 };
 
