@@ -18,12 +18,11 @@ const UserForm = () => {
   const [valid, setValid] = useState(false);
 
   const formValid = () => {
-    if (formData.email && formData.password && formData.password) {
-      setValid(true);
-    } else {
-      setValid(false);
-    }
+    const { email, password, cpassword } = formData;
+    // const passwordsMatch = password === cpassword;
+    setValid(email && password && cpassword && !formData.passwordMatchError);
   };
+
   // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,6 +35,7 @@ const UserForm = () => {
         passwordMatchError: value !== formData.password,
       }));
     }
+    formValid();
   };
 
   // Handle form submission
@@ -51,7 +51,6 @@ const UserForm = () => {
       return;
     }
 
-    console.log("Form Data Submitted: ", formData);
     try {
       const res = await fetch(
         "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCUjLjnpRxGDfU1vWmhDafxL3sC22a-oms",
@@ -73,7 +72,8 @@ const UserForm = () => {
         setErrorState({
           showAlert: false,
           passwordMatchError: false,
-          apiError: data.error.message,
+          apiError:
+            data.error.message || "Something went wrong. Please try again.",
         });
       } else {
         setErrorState({
@@ -158,7 +158,10 @@ const UserForm = () => {
           </Button>
         </Form>
       </div>
-      <div className="mt-5" style={{ width: "50rem" }}>
+      <div
+        className="mt-5 d-flex justify-content-center"
+        style={{ width: "50rem" }}
+      >
         <Button variant="primary" type="button">
           Have an Account? Login
         </Button>
