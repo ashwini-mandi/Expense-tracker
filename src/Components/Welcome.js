@@ -47,6 +47,10 @@ const WelcomeScreen = () => {
     fetchUserDetails();
   }, []);
 
+  const handleExpense = () => {
+    navigate("/add-expense");
+  };
+
   const sendVerificationEmail = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -152,6 +156,9 @@ const WelcomeScreen = () => {
             Your profile is complete. Enjoy the platform!
           </Alert>
         )}
+        <Button variant="primary" onClick={handleExpense}>
+          Add expense
+        </Button>
       </div>
     </>
   );

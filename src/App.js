@@ -4,6 +4,7 @@ import UserForm from "./Components/Form";
 import WelcomeScreen from "./Components/Welcome";
 import CompleteProfile from "./Components/Profile";
 import Password from "./Components/Password";
+import Expense from "./Components/Expense";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/welcome" element={<WelcomeScreen />} />
           <Route path="/profile" element={<CompleteProfile />} />
           <Route path="/forgot-password" element={<Password />} />
+          <Route path="/add-expense" element={<Expense />} />
         </Routes>
       </Router>
     </div>
