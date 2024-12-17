@@ -3,6 +3,7 @@ import "./App.css";
 import UserForm from "./Components/Form";
 import WelcomeScreen from "./Components/Welcome";
 import CompleteProfile from "./Components/Profile";
+import Password from "./Components/Password";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           {/* Route for the WelcomeScreen */}
           <Route path="/welcome" element={<WelcomeScreen />} />
           <Route path="/profile" element={<CompleteProfile />} />
+          <Route path="/forgot-password" element={<Password />} />
         </Routes>
       </Router>
     </div>

@@ -18,6 +18,9 @@ const UserForm = () => {
     apiError: null,
   });
   const navigate = useNavigate();
+  const passwordHandler = () => {
+    navigate("/forgot-password");
+  };
 
   const toggle = () => {
     setLogin(!isLogin);
@@ -162,6 +165,13 @@ const UserForm = () => {
             {isLogin ? "Login" : "Sign Up"}
           </Button>
         </Form>
+        <Button
+          variant="link"
+          className="text-decoration-none"
+          onClick={passwordHandler}
+        >
+          Forgot password?
+        </Button>
       </div>
       <div
         className="mt-5 d-flex justify-content-center"

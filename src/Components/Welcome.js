@@ -82,7 +82,7 @@ const WelcomeScreen = () => {
   };
 
   const navigateToCompleteProfile = () => {
-    navigate("/complete-profile");
+    navigate("/profile");
   };
 
   const history = useNavigate();
