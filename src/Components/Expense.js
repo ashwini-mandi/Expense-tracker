@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button, Form } from "react-bootstrap";
 
 const Expense = () => {
@@ -10,23 +10,67 @@ const Expense = () => {
   const [display, setDisplay] = useState([]);
   const categories = ["Food", "Travel", "Shopping", "Bills", "Other"];
 
-  // Handle form submission
-  const handleSubmit = (e) => {
+  // Fetch expenses from Firebase
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      try {
+        const res = await fetch(
+          "https://expensetracker-6be2b-default-rtdb.firebaseio.com/expenses.json"
+        );
+        if (!res.ok) throw new Error("Failed to fetch expenses");
+
+        const data = await res.json();
+        if (data) {
+          // Transform directly and update state
+          setDisplay(
+            Object.entries(data).map(([id, value]) => ({
+              id,
+              ...value,
+            }))
+          );
+        }
+      } catch (err) {
+        console.error("Error fetching expenses:", err);
+      }
+    };
+
+    fetchExpenses();
+  }, []);
+
+  // Submit expense to Firebase and update local state
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setDisplay((prev) => [...prev, expenses]);
-    setExpenses({ money: "", desc: "", category: "" });
+    try {
+      const res = await fetch(
+        "https://expensetracker-6be2b-default-rtdb.firebaseio.com/expenses.json",
+        {
+          method: "POST",
+          body: JSON.stringify(expenses),
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (!res.ok) throw new Error("Failed to save expense");
+
+      const id = (await res.json()).name; // Get Firebase's unique ID
+      setDisplay((prev) => [...prev, { id, ...expenses }]); // Update local state
+      setExpenses({ money: "", desc: "", category: "" }); // Reset form
+    } catch (err) {
+      console.error("Error saving expense:", err);
+    }
   };
 
-  // Handle input changes
+  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setExpenses((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Calculate total money
-  const totalMoney = display.reduce((total, expense) => {
-    return total + Number(expense.money);
-  }, 0);
+  // Calculate total money efficiently
+  const totalMoney = display.reduce(
+    (sum, expense) => sum + Number(expense.money || 0),
+    0
+  );
 
   return (
     <>
@@ -86,15 +130,19 @@ const Expense = () => {
       {/* Display Submitted Expenses */}
       <div className="mt-4 w-50 mx-auto">
         <h4>Expenses List</h4>
-        <ul className="list-group">
-          {display.map((expense, index) => (
-            <li key={index} className="list-group-item">
-              <strong>Money:</strong> ₹{expense.money} |{" "}
-              <strong>Description:</strong> {expense.desc} |{" "}
-              <strong>Category:</strong> {expense.category}
-            </li>
-          ))}
-        </ul>
+        {display.length === 0 ? (
+          <p className="text-muted">No expenses added yet.</p>
+        ) : (
+          <ul className="list-group">
+            {display.map((expense) => (
+              <li key={expense.id} className="list-group-item">
+                <strong>Money:</strong> ₹{expense.money} |{" "}
+                <strong>Description:</strong> {expense.desc} |{" "}
+                <strong>Category:</strong> {expense.category}
+              </li>
+            ))}
+          </ul>
+        )}
 
         {/* Total Money */}
         <div className="mt-3">
