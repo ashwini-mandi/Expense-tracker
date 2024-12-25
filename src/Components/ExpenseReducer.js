@@ -1,37 +1,33 @@
+// src/slices/expenseSlice.js
 import { createSlice } from "@reduxjs/toolkit";
+
+const initialState = {
+  expenses: [],
+  totalMoney: 0,
+  isPremium: false, // Track if the user has reached the premium threshold
+};
 
 const expenseSlice = createSlice({
   name: "expense",
-  initialState: {
-    items: [],
-    totalAmount: 0,
-    premiumActive: false,
-  },
+  initialState,
   reducers: {
-    addExpense(state, action) {
-      state.items.push(action.payload);
-      state.totalAmount += action.payload.money;
-      if (state.totalAmount > 100000) {
-        state.premiumActive = true;
-      }
-    },
-
     setExpenses(state, action) {
-      state.items = action.payload;
-      state.totalAmount = action.payload.reduce(
-        (sum, item) => sum + item.money,
-        0
-      );
-      state.premiumActive = state.totalAmount > 10000;
+      state.expenses = action.payload;
     },
-    clearExpenses(state) {
-      state.items = [];
-      state.totalAmount = 0;
-      state.premiumActive = false;
+    addExpense(state, action) {
+      state.expenses.push(action.payload);
+    },
+    setTotalMoney(state, action) {
+      state.totalMoney = action.payload;
+      // Activate premium when totalMoney exceeds ₹10,000
+      if (state.totalMoney > 10000) {
+        state.isPremium = true;
+      } else {
+        state.isPremium = false;
+      }
     },
   },
 });
 
-export default expenseSlice;
-
-export const { addExpense, setExpenses, clearExpenses } = expenseSlice.actions;
+export const { setExpenses, addExpense, setTotalMoney } = expenseSlice.actions;
+export default expenseSlice.reducer;

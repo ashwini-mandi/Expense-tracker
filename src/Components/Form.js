@@ -1,46 +1,41 @@
-import React, { useState } from "react";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import Alert from "react-bootstrap/Alert";
-import { Container } from "react-bootstrap";
+// src/components/UserForm.js
+import React from "react";
+import { Button, Form, Alert, Container } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import { setFormData, setErrorState, toggleLogin } from "./AuthReducer";
 import { useNavigate } from "react-router-dom";
 
 const UserForm = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    cpassword: "", // This state is still required for Sign Up mode
-  });
-  const [isLogin, setLogin] = useState(true);
-  const [errorState, setErrorState] = useState({
-    showAlert: false,
-    passwordMatchError: false,
-    apiError: null,
-  });
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const { formData, isLogin, errorState } = useSelector((state) => state.auth);
+
   const passwordHandler = () => {
     navigate("/forgot-password");
   };
 
   const toggle = () => {
-    setLogin(!isLogin);
+    dispatch(toggleLogin());
   };
 
   const url = isLogin
-    ? "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyCUjLjnpRxGDfU1vWmhDafxL3sC22a-oms" // Replace with your actual API key
-    : "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCUjLjnpRxGDfU1vWmhDafxL3sC22a-oms"; // Replace with your actual API key
+    ? "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyCUjLjnpRxGDfU1vWmhDafxL3sC22a-oms"
+    : "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCUjLjnpRxGDfU1vWmhDafxL3sC22a-oms";
 
   // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    dispatch(setFormData({ ...formData, [name]: value }));
 
     // Validate password match while typing in "Confirm Password"
     if (name === "cpassword" && !isLogin) {
-      setErrorState((prevState) => ({
-        ...prevState,
-        passwordMatchError: value !== formData.password,
-      }));
+      dispatch(
+        setErrorState({
+          ...errorState,
+          passwordMatchError: value !== formData.password,
+        })
+      );
     }
   };
 
@@ -50,10 +45,12 @@ const UserForm = () => {
 
     // If not login mode, validate password match
     if (!isLogin && formData.password !== formData.cpassword) {
-      setErrorState((prevState) => ({
-        ...prevState,
-        passwordMatchError: true,
-      }));
+      dispatch(
+        setErrorState({
+          ...errorState,
+          passwordMatchError: true,
+        })
+      );
       return;
     }
 
@@ -72,26 +69,30 @@ const UserForm = () => {
 
       if (!res.ok) {
         const data = await res.json();
-        setErrorState({
-          showAlert: false,
-          passwordMatchError: false,
-          apiError:
-            data.error.message || "Something went wrong. Please try again.",
-        });
+        dispatch(
+          setErrorState({
+            showAlert: false,
+            passwordMatchError: false,
+            apiError:
+              data.error.message || "Something went wrong. Please try again.",
+          })
+        );
       } else {
-        setErrorState({
-          showAlert: true,
-          passwordMatchError: false,
-          apiError: null,
-        });
+        dispatch(
+          setErrorState({
+            showAlert: true,
+            passwordMatchError: false,
+            apiError: null,
+          })
+        );
+
         const data = await res.json();
         localStorage.setItem("token", data.idToken); // Save the token
         navigate("/welcome");
-        setTimeout(
-          () =>
-            setErrorState((prevState) => ({ ...prevState, showAlert: false })),
-          3000
-        );
+
+        setTimeout(() => {
+          dispatch(setErrorState({ ...errorState, showAlert: false }));
+        }, 3000);
       }
     } catch (error) {
       console.error("Error submitting data: ", error);
@@ -165,6 +166,7 @@ const UserForm = () => {
             {isLogin ? "Login" : "Sign Up"}
           </Button>
         </Form>
+
         <Button
           variant="link"
           className="text-decoration-none"
@@ -173,6 +175,7 @@ const UserForm = () => {
           Forgot password?
         </Button>
       </div>
+
       <div
         className="mt-5 d-flex justify-content-center"
         style={{ width: "50rem" }}

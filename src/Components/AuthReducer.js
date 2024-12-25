@@ -1,24 +1,36 @@
+// src/features/auth/authSlice.js
 import { createSlice } from "@reduxjs/toolkit";
+
+const initialState = {
+  formData: {
+    email: "",
+    password: "",
+    cpassword: "",
+  },
+  isLogin: true,
+  errorState: {
+    showAlert: false,
+    passwordMatchError: false,
+    apiError: null,
+  },
+};
 
 const authSlice = createSlice({
   name: "auth",
-  initialState: {
-    isLoggedIn: false,
-    token: null,
-    userId: null,
-  },
+  initialState,
   reducers: {
-    login(state, action) {
-      state.isLoggedIn = true;
-      state.token = action.payload.token;
-      state.userId = action.payload.userId;
+    setFormData: (state, action) => {
+      state.formData = action.payload;
     },
-    logout() {
-      state.isLoggedIn = false;
-      (state.token = null), (state.userId = null);
+    setErrorState: (state, action) => {
+      state.errorState = action.payload;
+    },
+    toggleLogin: (state) => {
+      state.isLogin = !state.isLogin;
     },
   },
 });
 
-export const { login, logout } = authSlice.actions;
-export default authSlice;
+export const { setFormData, setErrorState, toggleLogin } = authSlice.actions;
+
+export default authSlice.reducer;

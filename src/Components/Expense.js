@@ -1,13 +1,21 @@
+// src/components/Expense.js
 import { useState, useEffect } from "react";
 import { Button, Form } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import { setExpenses, addExpense, setTotalMoney } from "./ExpenseReducer";
 
 const Expense = () => {
-  const [expenses, setExpenses] = useState({
+  const [expensesForm, setExpensesForm] = useState({
     money: "",
     desc: "",
     category: "",
   });
-  const [display, setDisplay] = useState([]);
+
+  const { expenses, totalMoney, isPremium } = useSelector(
+    (state) => state.expenses
+  );
+  const dispatch = useDispatch();
+
   const categories = ["Food", "Travel", "Shopping", "Bills", "Other"];
 
   // Fetch expenses from Firebase
@@ -21,13 +29,18 @@ const Expense = () => {
 
         const data = await res.json();
         if (data) {
-          // Transform directly and update state
-          setDisplay(
-            Object.entries(data).map(([id, value]) => ({
-              id,
-              ...value,
-            }))
+          const fetchedExpenses = Object.entries(data).map(([id, value]) => ({
+            id,
+            ...value,
+          }));
+          dispatch(setExpenses(fetchedExpenses));
+
+          // Calculate the total money spent
+          const total = fetchedExpenses.reduce(
+            (sum, expense) => sum + Number(expense.money || 0),
+            0
           );
+          dispatch(setTotalMoney(total));
         }
       } catch (err) {
         console.error("Error fetching expenses:", err);
@@ -35,7 +48,7 @@ const Expense = () => {
     };
 
     fetchExpenses();
-  }, []);
+  }, [dispatch]);
 
   // Submit expense to Firebase and update local state
   const handleSubmit = async (e) => {
@@ -45,7 +58,7 @@ const Expense = () => {
         "https://expensetracker-6be2b-default-rtdb.firebaseio.com/expenses.json",
         {
           method: "POST",
-          body: JSON.stringify(expenses),
+          body: JSON.stringify(expensesForm),
           headers: { "Content-Type": "application/json" },
         }
       );
@@ -53,8 +66,14 @@ const Expense = () => {
       if (!res.ok) throw new Error("Failed to save expense");
 
       const id = (await res.json()).name; // Get Firebase's unique ID
-      setDisplay((prev) => [...prev, { id, ...expenses }]); // Update local state
-      setExpenses({ money: "", desc: "", category: "" }); // Reset form
+      const newExpense = { id, ...expensesForm };
+      dispatch(addExpense(newExpense)); // Update Redux state with new expense
+
+      // Update total money spent
+      const newTotalMoney = totalMoney + Number(expensesForm.money);
+      dispatch(setTotalMoney(newTotalMoney));
+
+      setExpensesForm({ money: "", desc: "", category: "" }); // Reset form
     } catch (err) {
       console.error("Error saving expense:", err);
     }
@@ -63,14 +82,8 @@ const Expense = () => {
   // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setExpenses((prev) => ({ ...prev, [name]: value }));
+    setExpensesForm((prev) => ({ ...prev, [name]: value }));
   };
-
-  // Calculate total money efficiently
-  const totalMoney = display.reduce(
-    (sum, expense) => sum + Number(expense.money || 0),
-    0
-  );
 
   return (
     <>
@@ -82,7 +95,7 @@ const Expense = () => {
             <Form.Control
               type="number"
               placeholder="Enter the money spent"
-              value={expenses.money}
+              value={expensesForm.money}
               name="money"
               onChange={handleChange}
               required
@@ -95,7 +108,7 @@ const Expense = () => {
             <Form.Control
               type="text"
               placeholder="Enter the description of expense"
-              value={expenses.desc}
+              value={expensesForm.desc}
               name="desc"
               onChange={handleChange}
               required
@@ -107,7 +120,7 @@ const Expense = () => {
             <Form.Label>Select Category</Form.Label>
             <Form.Select
               name="category"
-              value={expenses.category}
+              value={expensesForm.category}
               onChange={handleChange}
               required
             >
@@ -130,11 +143,11 @@ const Expense = () => {
       {/* Display Submitted Expenses */}
       <div className="mt-4 w-50 mx-auto">
         <h4>Expenses List</h4>
-        {display.length === 0 ? (
+        {expenses.length === 0 ? (
           <p className="text-muted">No expenses added yet.</p>
         ) : (
           <ul className="list-group">
-            {display.map((expense) => (
+            {expenses.map((expense) => (
               <li key={expense.id} className="list-group-item">
                 <strong>Money:</strong> ₹{expense.money} |{" "}
                 <strong>Description:</strong> {expense.desc} |{" "}
@@ -150,6 +163,13 @@ const Expense = () => {
             <strong>Total Money Spent: ₹{totalMoney}</strong>
           </h5>
         </div>
+
+        {/* Show Premium Button if Total Money Exceeds ₹10,000 */}
+        {isPremium && (
+          <Button variant="danger" className="mt-4">
+            Activate Premium
+          </Button>
+        )}
       </div>
     </>
   );
