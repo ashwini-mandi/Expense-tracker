@@ -7,7 +7,7 @@ import themeReducer from "./themeReducer";
 const store = configureStore({
   reducer: {
     auth: authReducer,
-    expenses: expenseReducer,
+    expense: expenseReducer,
     theme: themeReducer,
   },
 });

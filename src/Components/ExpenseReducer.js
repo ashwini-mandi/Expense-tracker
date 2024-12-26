@@ -1,4 +1,4 @@
-// src/slices/expenseSlice.js
+// src/features/expense/expenseSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
@@ -19,15 +19,13 @@ const expenseSlice = createSlice({
     },
     setTotalMoney(state, action) {
       state.totalMoney = action.payload;
-      // Activate premium when totalMoney exceeds ₹10,000
-      if (state.totalMoney > 10000) {
-        state.isPremium = true;
-      } else {
-        state.isPremium = false;
-      }
+    },
+    setPremium(state, action) {
+      state.isPremium = action.payload;
     },
   },
 });
 
-export const { setExpenses, addExpense, setTotalMoney } = expenseSlice.actions;
+export const { setExpenses, addExpense, setTotalMoney, setPremium } =
+  expenseSlice.actions;
 export default expenseSlice.reducer;
