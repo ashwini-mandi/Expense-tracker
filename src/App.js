@@ -1,40 +1,34 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import "./App.css";
-import UserForm from "./Components/Form";
-import WelcomeScreen from "./Components/Welcome";
-import CompleteProfile from "./Components/Profile";
-import Password from "./Components/Password";
-import Expense from "./Components/Expense";
-import { toggleTheme } from "./Components/themeReducer";
-import { useSelector, useDispatch } from "react-redux";
+import Expense from "./Components/ExpenseTracker/Expense";
+import RootLayout from "./Components/Layout/Root";
+import Profile from "./Components/Profile/Profile";
+
+import SignupLogin from "./Components/SignupLogin/SignupLogin";
+import { authActions } from "./store/auth-slice";
+import { themeActions } from "./store/theme-slice";
 
 function App() {
-  // const isDarkTheme = useSelector((state) => state.theme.isDark);
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const isDarkMode = useSelector((state) => state.theme.isDark);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   return (
-    <div className="App">
-      {/* <div
-        style={{
-          backgroundColor: isDarkTheme ? "#333" : "#fff",
-          color: isDarkTheme ? "#fff" : "#000",
-          minHeight: "100vh",
-        }}
-      >
-        <button onClick={() => dispatch(toggleTheme())}>
-          Switch to {isDarkTheme ? "Light" : "Dark"} Theme
-        </button> */}
-      <Router>
-        <Routes>
-          {/* Route for the UserForm */}
-          <Route path="/" element={<UserForm />} />
-          {/* Route for the WelcomeScreen */}
-          <Route path="/welcome" element={<WelcomeScreen />} />
-          <Route path="/profile" element={<CompleteProfile />} />
-          <Route path="/forgot-password" element={<Password />} />
-          <Route path="/add-expense" element={<Expense />} />
-        </Routes>
-      </Router>
-      {/* </div> */}
+    <div
+      className={`App ${isLoggedIn && isDarkMode ? "darkTheme" : "lightTheme"}`}
+    >
+      <Routes>
+        <Route path="/" element={<SignupLogin />} />
+        {isLoggedIn && <Route path="/profile" element={<Profile />} />}
+        {isLoggedIn && (
+          <Route path="/profile/expense-tracker" element={<RootLayout />}>
+            <Route index element={<Expense />} />
+          </Route>
+        )}
+      </Routes>
     </div>
   );
 }
