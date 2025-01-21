@@ -85,7 +85,7 @@ const ExpenseList = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Adding the token to Authorization header
+            // Authorization: `Bearer ${token}`, // Adding the token to Authorization header
           },
           body: JSON.stringify({ isPremium: true }),
         }

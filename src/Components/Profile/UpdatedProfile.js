@@ -4,65 +4,52 @@ import { Button, Form } from "react-bootstrap";
 const UpdateProfileForm = (props) => {
   let emailInputRef = useRef();
   let nameInputRef = useRef();
-  const contactInputRef = useRef();
-  const locationInputRef = useRef();
+  const photoUrlInputRef = useRef();
 
-  // Fetch user data when it is available (to pre-fill the form)
   useEffect(() => {
     if (props.user) {
-      if (props.user.displayName) {
+      if (props.user.displayName)
         nameInputRef.current.value = props.user.displayName;
-      }
       emailInputRef.current.value = props.user.email;
+      if (props.user.photoUrl)
+        photoUrlInputRef.current.value = props.user.photoUrl;
     }
   }, [props.user]);
 
   const clickUpdateHandler = async (event) => {
     event.preventDefault();
-
-    // Get the entered data from the input fields
     const enteredName = nameInputRef.current.value;
-    const enteredContact = contactInputRef.current.value;
-    const enteredLocation = locationInputRef.current.value;
-
-    // Debugging: Log the values to check if the correct data is being entered
-    console.log("Entered Name: ", enteredName);
-    console.log("Entered Contact: ", enteredContact);
-    console.log("Entered Location: ", enteredLocation);
+    const enteredPhotoUrl = photoUrlInputRef.current.value;
 
     try {
-      // Send a POST request to update the profile data
       const res = await fetch(
-        "https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyCUjLjnpRxGDfU1vWmhDafxL3sC22a-oms", // Use your correct API key
+        "https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyCUjLjnpRxGDfU1vWmhDafxL3sC22a-oms",
         {
           method: "POST",
           body: JSON.stringify({
-            idToken: localStorage["user"], // Ensure user token is available in localStorage
+            idToken: localStorage["user"],
             displayName: enteredName,
-            contact: enteredContact, // Send the entered contact as part of the request body
-            location: enteredLocation, // Send the entered location as part of the request body
+            photoUrl: enteredPhotoUrl,
             returnSecureToken: true,
           }),
-          headers: {
-            "content-type": "application/json",
-          },
+          headers: { "content-type": "application/json" },
         }
       );
 
-      // Parse the response
       const upData = await res.json();
-
-      // If the response is OK, update the profile
       if (res.ok) {
         alert("Profile Updated");
-        props.update(); // Callback function to update the parent component state
-        nameInputRef.current.value = props.user.displayName;
-        emailInputRef.current.value = props.user.email;
+        // Pass the updated data back to the parent component to re-fetch user data
+        props.update({
+          ...props.user,
+          displayName: enteredName,
+          photoUrl: enteredPhotoUrl,
+        });
       } else {
         throw new Error("Updation failed! Please try again.");
       }
     } catch (error) {
-      alert(error.message); // Alert if any error occurs
+      alert(error.message);
     }
   };
 
@@ -79,12 +66,8 @@ const UpdateProfileForm = (props) => {
           <Form.Control placeholder="Full Name" ref={nameInputRef} />
         </Form.Group>
         <Form.Group>
-          <Form.Label>Contact No.:</Form.Label>
-          <Form.Control placeholder="Contact No." ref={contactInputRef} />
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Location: </Form.Label>
-          <Form.Control placeholder="Location" ref={locationInputRef} />
+          <Form.Label>Photo URL:</Form.Label>
+          <Form.Control placeholder="Photo URL" ref={photoUrlInputRef} />
         </Form.Group>
         <Button type="submit" onClick={clickUpdateHandler}>
           Update
