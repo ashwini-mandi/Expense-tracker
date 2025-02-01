@@ -9,7 +9,6 @@ const ExpenseForm = () => {
   const dateRef = useRef();
   const cateRef = useRef();
   const formRef = useRef();
-
   const auth = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const expense = useSelector((state) => state.expenseStore);
@@ -77,7 +76,7 @@ const ExpenseForm = () => {
   };
 
   return (
-    <div className="d-flex align-items-center justify-content-center ">
+    <div className="d-flex align-items-center justify-content-center  mt-5 ">
       <Card className="p-4 shadow" style={{ maxWidth: "500px", width: "100%" }}>
         <Card.Body>
           <Card.Title className="text-center mb-4">Add New Expense</Card.Title>
@@ -121,12 +120,12 @@ const ExpenseForm = () => {
               </Col>
             </Row>
             <Button
-              variant="primary"
+              variant={expense.editItems ? "warning" : "primary"}
               type="submit"
               onClick={clickAddHandler}
               className="w-100"
             >
-              Add Expense
+              {expense.editItems ? "Update Expense" : "Add Expense"}
             </Button>
           </Form>
         </Card.Body>

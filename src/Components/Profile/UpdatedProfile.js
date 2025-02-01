@@ -1,7 +1,10 @@
 import React, { useEffect, useRef } from "react";
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, Card, Container } from "react-bootstrap";
+import { useDispatch } from "react-redux";
+import { authActions } from "../Context/auth-slice"; // assuming this is where the update action is defined
 
 const UpdateProfileForm = (props) => {
+  const dispatch = useDispatch(); // Get the dispatch function
   let emailInputRef = useRef();
   let nameInputRef = useRef();
   const photoUrlInputRef = useRef();
@@ -39,12 +42,13 @@ const UpdateProfileForm = (props) => {
       const upData = await res.json();
       if (res.ok) {
         alert("Profile Updated");
-        // Pass the updated data back to the parent component to re-fetch user data
-        props.update({
-          ...props.user,
-          displayName: enteredName,
-          photoUrl: enteredPhotoUrl,
-        });
+        // Dispatch the updated user data to the Redux store
+        dispatch(
+          authActions.updateUser({
+            displayName: enteredName,
+            photoUrl: enteredPhotoUrl,
+          })
+        );
       } else {
         throw new Error("Updation failed! Please try again.");
       }
@@ -54,26 +58,48 @@ const UpdateProfileForm = (props) => {
   };
 
   return (
-    <section>
-      <h1>Update profile</h1>
-      <Form>
-        <Form.Group>
-          <Form.Label>Email</Form.Label>
-          <Form.Control placeholder="Email" ref={emailInputRef} />
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Full Name:</Form.Label>
-          <Form.Control placeholder="Full Name" ref={nameInputRef} />
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Photo URL:</Form.Label>
-          <Form.Control placeholder="Photo URL" ref={photoUrlInputRef} />
-        </Form.Group>
-        <Button type="submit" onClick={clickUpdateHandler}>
-          Update
-        </Button>
-      </Form>
-    </section>
+    <Container className="d-flex justify-content-center mt-5">
+      <Card className="p-4 shadow" style={{ maxWidth: "400px", width: "100%" }}>
+        <Card.Body>
+          <h2 className="text-center mb-4">Update Profile</h2>
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Email"
+                ref={emailInputRef}
+                disabled
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Full Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Full Name"
+                ref={nameInputRef}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Photo URL</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Photo URL"
+                ref={photoUrlInputRef}
+              />
+            </Form.Group>
+            <Button
+              variant="primary"
+              type="submit"
+              onClick={clickUpdateHandler}
+              className="w-100"
+            >
+              Update
+            </Button>
+          </Form>
+        </Card.Body>
+      </Card>
+    </Container>
   );
 };
 

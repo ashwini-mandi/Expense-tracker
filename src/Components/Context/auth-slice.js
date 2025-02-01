@@ -31,6 +31,13 @@ const authSlice = createSlice({
       localStorage.removeItem("isDark");
       localStorage.removeItem("isLoggedIn");
     },
+    updateUser(state, action) {
+      state.user = {
+        ...state.user,
+        ...action.payload,
+        // Update user with new data
+      };
+    },
     setIsPremium(state) {
       state.isPremium = true;
     },

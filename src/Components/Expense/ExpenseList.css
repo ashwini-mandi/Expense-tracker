@@ -1,0 +1,81 @@
+/* ExpenseList.css */
+
+.expense-item {
+  background-color: #f8f9fa; /* Light gray */
+  transition: background 0.3s ease-in-out;
+}
+
+.expense-item:hover {
+  background-color: #e9ecef; /* Slightly darker on hover */
+}
+
+.expense-date,
+.expense-category,
+.expense-description,
+.expense-amount {
+  min-width: 15%;
+  text-align: left;
+  font-weight: 500;
+  color: #343a40;
+}
+
+.expense-actions {
+  min-width: 20%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.action-btn {
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease-in-out;
+}
+
+.action-btn:hover {
+  transform: scale(1.1);
+}
+
+/* Scrollable List */
+.expense-list-container {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+}
+
+/* Sticky Header */
+.expense-header {
+  position: sticky;
+  top: 0;
+  background-color: #ffffff;
+  padding: 10px;
+  font-weight: bold;
+  border-bottom: 2px solid #dee2e6;
+  z-index: 10;
+}
+
+/* Premium Button */
+.activate-premium-btn {
+  background-color: #ffcc00;
+  color: #000;
+  font-weight: bold;
+  border: none;
+  transition: background 0.3s;
+}
+
+.activate-premium-btn:hover {
+  background-color: #ffb700;
+}
+
+/* Download Button */
+.download-btn {
+  background-color: #28a745;
+  border: none;
+  transition: background 0.3s;
+}
+
+.download-btn:hover {
+  background-color: #218838;
+}

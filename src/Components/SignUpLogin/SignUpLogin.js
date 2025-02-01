@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import LoginForm from "./Login";
-import SignupForm from "./SignUP";
+import Signup from "./SignUP";
+import classes from "./SignUpLogin.module.css";
 
-const SignupLogin = () => {
+const SignupLogin = (props) => {
   const [isLogin, setIsLogin] = useState(true);
 
   const switchHandler = () => {
@@ -10,50 +11,22 @@ const SignupLogin = () => {
   };
 
   return (
-    <div className="container text-center mt-5">
-      <h1 className="mb-3">Welcome To Expense Tracker</h1>
-      <div
-        style={{
-          maxWidth: "350px",
-          padding: "15px",
-          margin: "0 auto",
-          border: "1px solid #ddd",
-          borderRadius: "8px",
-        }}
-      >
-        {isLogin ? <LoginForm /> : <SignupForm />}
-        <div className="mt-2">
-          {isLogin ? (
+    <div className={classes.container}>
+      <h1>Welcome To Expenes Tracker</h1>
+      <div className={classes.auth}>
+        {!isLogin && <Signup />}
+        {isLogin && <LoginForm />}
+        <div className={classes.switchCon}>
+          {isLogin && (
             <p>
-              Don’t have an account?{" "}
-              <button
-                onClick={switchHandler}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "blue",
-                  textDecoration: "underline",
-                  cursor: "pointer",
-                }}
-              >
-                Sign Up
-              </button>
+              Don't have an account?
+              <button onClick={switchHandler}>Sign Up</button>
             </p>
-          ) : (
+          )}
+          {!isLogin && (
             <p>
-              Already have an account?{" "}
-              <button
-                onClick={switchHandler}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "blue",
-                  textDecoration: "underline",
-                  cursor: "pointer",
-                }}
-              >
-                Log In
-              </button>
+              Already have an account?
+              <button onClick={switchHandler}>Log In</button>
             </p>
           )}
         </div>

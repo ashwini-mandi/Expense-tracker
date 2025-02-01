@@ -29,6 +29,7 @@ const LoginForm = (props) => {
 
       window.addEventListener("mousemove", resetTimer);
       window.addEventListener("keydown", resetTimer);
+
       window.addEventListener("click", resetTimer);
 
       // Cleanup event listeners when component unmounts
@@ -96,7 +97,7 @@ const LoginForm = (props) => {
             return;
           } else {
             setIsVerifyEmail(false);
-            navigate("/profile/expense-tracker", { replace: true });
+            navigate("/expense-tracker", { replace: true });
             startLogoutTimer();
             dispatch(
               authActions.login({ tokenId: data.idToken, email: data.email })
@@ -106,7 +107,7 @@ const LoginForm = (props) => {
               `https://expensetracker-6be2b-default-rtdb.firebaseio.com//${email}/userDetail.json`
             );
             if (modeRes.data) {
-              dispatch(themeActions.toggelTheme());
+              dispatch(themeActions.toggleTheme());
               dispatch(authActions.setIsPremium());
               localStorage.setItem("isPremium", true);
             }

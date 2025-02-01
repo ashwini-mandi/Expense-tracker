@@ -1,27 +1,18 @@
-/* Global styles for the app */
 .App {
-  transition: background-color 0.3s ease, color 0.3s ease;
+  text-align: center;
+  height: 100vh;
 }
 
-/* Dark theme styles */
 .darkTheme {
-  background-color: #121212;
+  background-color: rgb(39, 36, 36);
   color: white;
+  overflow: auto;
 }
-
-/* Light theme styles */
 .lightTheme {
-  background-color: white;
-  color: black;
-}
-
-/* Additional styling for components if needed */
-button {
-  background-color: inherit; /* Ensure buttons respect global theme */
-  color: inherit;
-}
-
-.list-group-item {
-  background-color: inherit;
-  color: inherit;
+  height: 100vh;
+  overflow: auto;
+  background-image: url("https://tse1.mm.bing.net/th?id=OIP.hRihM_f8fUSF28hdwGI-WwHaE5&pid=Api&rs=1&c=1&qlt=95&w=187&h=123");
+  background-repeat: no-repeat; /* Prevents repeating */
+  background-size: cover; /* Scales the image to cover the entire screen */
+  background-position: center;
 }

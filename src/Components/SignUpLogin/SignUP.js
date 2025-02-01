@@ -77,8 +77,7 @@ const Signup = () => {
 
   const checkVerification = async (token) => {
     try {
-      let isVerified = false;
-      while (!isVerified) {
+      const interval = setInterval(async () => {
         const response = await fetch(
           "https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyCUjLjnpRxGDfU1vWmhDafxL3sC22a-oms",
           {
@@ -90,18 +89,15 @@ const Signup = () => {
           }
         );
         const data = await response.json();
-        isVerified = data.users[0]?.emailVerified;
+        const isVerified = data.users[0]?.emailVerified;
 
         if (isVerified) {
+          clearInterval(interval);
           alert("Email verified! You can now log in.");
           setVerificationComplete(true);
-          break;
-        } else {
-          alert("Please verify your email before proceeding.");
-          setVerifyMail(true);
-          break;
+          setVerifyMail(false);
         }
-      }
+      }, 5000);
     } catch (error) {
       alert("Failed to check email verification. Try again.");
     }

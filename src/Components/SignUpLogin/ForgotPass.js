@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from "react";
+import React, { useRef } from "react";
 import { Button, Form } from "react-bootstrap";
 
 const ForgotPassForm = (props) => {
@@ -9,7 +9,7 @@ const ForgotPassForm = (props) => {
     const enteredEmail = emailInputRef.current.value;
 
     try {
-      const res = await fetch(
+      await fetch(
         "https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyCUjLjnpRxGDfU1vWmhDafxL3sC22a-oms",
         {
           method: "POST",
